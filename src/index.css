@@ -1,0 +1,28 @@
+body {
+  font-family: Arial, sans-serif;
+  /* Enhanced, attractive multi-color gradient background with overlay for all pages */
+  background: linear-gradient(120deg, #a7d0fc 0%, #f4f8fb 50%, #6fb1fc 100%);
+  color: #222;
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  pointer-events: none;
+  /* Subtle pattern overlay for depth */
+  background: repeating-linear-gradient(135deg, rgba(255,255,255,0.08) 0px, rgba(255,255,255,0.08) 2px, transparent 2px, transparent 20px);
+  opacity: 0.7;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
