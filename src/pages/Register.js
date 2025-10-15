@@ -110,7 +110,7 @@ const Register = () => {
     }
 
     try {
-      const res = await fetch('http://localhost:5000/api/auth/register', {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form)
@@ -134,13 +134,13 @@ const Register = () => {
   };
 
   const handleGoogleLogin = () => {
-    // Redirect to Google authentication
-    window.open('http://localhost:5000/api/auth/google', '_self');
+  // Redirect to Google authentication
+  window.open(`${process.env.REACT_APP_API_URL}/api/auth/google`, '_self');
   };
 
   const resendOtp = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/auth/resend-otp', {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/auth/resend-otp`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email })
@@ -164,7 +164,7 @@ const Register = () => {
     setLoading(true);
 
     try {
-      const res = await fetch('http://localhost:5000/api/auth/verify', {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/auth/verify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, ...codes })

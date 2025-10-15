@@ -7,7 +7,7 @@ const Activate = () => {
   const [msg, setMsg] = useState('Activating...');
 
   useEffect(() => {
-    fetch(`http://localhost:5000/api/auth/activate/${token}`)
+  fetch(`${process.env.REACT_APP_API_URL}/api/auth/activate/${token}`)
       .then(res => res.json())
       .then(data => setMsg(data.msg));
   }, [token]);

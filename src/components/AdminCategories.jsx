@@ -15,7 +15,7 @@ function AdminCategories() {
       setLoading(true);
       const adminToken = localStorage.getItem('adminToken');
       const headers = adminToken ? { Authorization: `Bearer ${adminToken}` } : {};
-      const response = await axios.get('http://localhost:5000/api/categories', { headers });
+  const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/categories`, { headers });
       setCategories(response.data);
     } catch (err) {
       console.error('Error fetching categories:', err);

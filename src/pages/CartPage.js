@@ -105,7 +105,7 @@ const CartPage = () => {
                   <div className="item-image">
                     <img
                       className="cart-item-img"
-                      src={`http://localhost:5000${item.product.image}`}
+                      src={`${process.env.REACT_APP_API_URL}${item.product.image}`}
                       alt={item.product.name}
                     />
                   </div>
