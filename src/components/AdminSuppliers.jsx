@@ -18,11 +18,15 @@ const AdminSuppliers = () => {
   const { token, isLoggedIn } = useContext(AuthContext);
 
   useEffect(() => {
+    // Debug: Check if adminToken exists
+    const adminToken = localStorage.getItem('adminToken');
+    console.log('🔐 AdminSuppliers - adminToken in localStorage:', adminToken ? 'EXISTS' : 'MISSING');
     fetchSuppliers();
   }, []);
 
   const fetchSuppliers = async () => {
     try {
+      console.log('📤 Fetching suppliers...');
       const response = await api.get('/api/suppliers');
       const payload = response.data;
       if (Array.isArray(payload)) setSuppliers(payload);
@@ -30,7 +34,7 @@ const AdminSuppliers = () => {
       else setSuppliers([]);
     } catch (err) {
       setError('Failed to fetch suppliers');
-      console.error(err);
+      console.error('❌ Error fetching suppliers:', err.response?.data || err.message);
     }
   };
 
