@@ -45,13 +45,19 @@ const ProductList = () => {
     if (params.length) url += `?${params.join('&')}`;
 
     fetch(url)
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+        return res.json();
+      })
       .then(data => {
-        setProducts(data.products || []);
+        setProducts(Array.isArray(data.products) ? data.products : []);
         setPagination(data.pagination || {});
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch(err => {
+        console.error('Error fetching products:', err);
+        setLoading(false);
+      });
   };
 
   // Fetch on category or search change
