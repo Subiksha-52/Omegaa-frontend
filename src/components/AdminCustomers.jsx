@@ -6,6 +6,14 @@ function AdminCustomers() {
   const [customers, setCustomers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [editingCustomer, setEditingCustomer] = useState(null);
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    isVerified: false
+  });
 
   const { token, isLoggedIn } = useContext(AuthContext);
 
@@ -31,6 +39,58 @@ function AdminCustomers() {
       setError('Failed to load customers');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleEdit = (customer) => {
+    setEditingCustomer(customer._id);
+    setFormData({
+      firstName: customer.firstName || '',
+      lastName: customer.lastName || '',
+      email: customer.email || '',
+      phone: customer.phone || '',
+      isVerified: customer.isVerified || false
+    });
+  };
+
+  const handleCancelEdit = () => {
+    setEditingCustomer(null);
+    setFormData({ firstName: '', lastName: '', email: '', phone: '', isVerified: false });
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  };
+
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+    try {
+      const adminToken = localStorage.getItem('adminToken');
+      const headers = adminToken ? { Authorization: `Bearer ${adminToken}` } : {};
+      await api.put(`/api/users/${editingCustomer}`, formData, { headers });
+      fetchCustomers();
+      handleCancelEdit();
+    } catch (err) {
+      console.error('Error updating customer:', err);
+      setError('Failed to update customer');
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this customer?')) return;
+    
+    try {
+      const adminToken = localStorage.getItem('adminToken');
+      const headers = adminToken ? { Authorization: `Bearer ${adminToken}` } : {};
+      await api.delete(`/api/users/${id}`, { headers });
+      fetchCustomers();
+    } catch (err) {
+      console.error('Error deleting customer:', err);
+      setError('Failed to delete customer');
     }
   };
 
@@ -62,6 +122,58 @@ function AdminCustomers() {
         <h3>CUSTOMERS MANAGEMENT</h3>
       </div>
 
+      {editingCustomer && (
+        <div className='edit-form-modal'>
+          <form onSubmit={handleUpdate} className='edit-form'>
+            <h4>Edit Customer</h4>
+            <input
+              type="text"
+              name="firstName"
+              placeholder="First Name"
+              value={formData.firstName}
+              onChange={handleInputChange}
+              required
+            />
+            <input
+              type="text"
+              name="lastName"
+              placeholder="Last Name"
+              value={formData.lastName}
+              onChange={handleInputChange}
+              required
+            />
+            <input
+              type="email"
+              name="email"
+              placeholder="Email"
+              value={formData.email}
+              onChange={handleInputChange}
+              required
+            />
+            <input
+              type="tel"
+              name="phone"
+              placeholder="Phone"
+              value={formData.phone}
+              onChange={handleInputChange}
+            />
+            <label>
+              <input
+                type="checkbox"
+                name="isVerified"
+                checked={formData.isVerified}
+                onChange={handleInputChange}
+              />
+              Verified
+            </label>
+            <div className='form-actions'>
+              <button type="submit">Update</button>
+              <button type="button" onClick={handleCancelEdit}>Cancel</button>
+            </div>
+          </form>
+        </div>
+      )}
+
       <div className='customers-table'>
         <table>
           <thead>
@@ -76,7 +188,7 @@ function AdminCustomers() {
           <tbody>
             {customers.map((customer) => (
               <tr key={customer._id}>
-                <td>{customer.name}</td>
+                <td>{`${customer.firstName || ''} ${customer.lastName || ''}`}</td>
                 <td>{customer.email}</td>
                 <td>{customer.phone || 'N/A'}</td>
                 <td>
@@ -85,8 +197,8 @@ function AdminCustomers() {
                   </span>
                 </td>
                 <td>
-                  <button className='btn-edit'>Edit</button>
-                  <button className='btn-delete'>Delete</button>
+                  <button className='btn-edit' onClick={() => handleEdit(customer)}>Edit</button>
+                  <button className='btn-delete' onClick={() => handleDelete(customer._id)}>Delete</button>
                 </td>
               </tr>
             ))}

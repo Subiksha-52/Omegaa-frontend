@@ -5,6 +5,8 @@ function AdminInventory() {
   const [inventory, setInventory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [editingItem, setEditingItem] = useState(null);
+  const [newStock, setNewStock] = useState('');
 
   useEffect(() => {
     fetchInventory();
@@ -25,8 +27,8 @@ function AdminInventory() {
         id: product._id,
         name: product.name,
         category: product.category,
-        currentStock: product.qty,
-        lowStock: product.qty < 10,
+        currentStock: product.stock || 0,
+        lowStock: (product.stock || 0) < 10,
         lastUpdated: product.updatedAt || product.createdAt
       }));
 
@@ -37,6 +39,34 @@ function AdminInventory() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleRestock = (item) => {
+    setEditingItem(item.id);
+    setNewStock(item.currentStock.toString());
+  };
+
+  const handleCancelEdit = () => {
+    setEditingItem(null);
+    setNewStock('');
+  };
+
+  const handleUpdateStock = async (itemId) => {
+    try {
+      const adminToken = localStorage.getItem('adminToken');
+      const headers = adminToken ? { Authorization: `Bearer ${adminToken}` } : {};
+      await api.put(`/api/products/${itemId}/stock`, { stock: Number(newStock) }, { headers });
+      fetchInventory();
+      handleCancelEdit();
+    } catch (err) {
+      console.error('Error updating stock:', err);
+      setError('Failed to update stock');
+    }
+  };
+
+  const handleEditProduct = (itemId) => {
+    // Navigate to product edit page or open edit modal
+    window.location.href = `/admin/products?edit=${itemId}`;
   };
 
   if (loading) {
@@ -84,7 +114,19 @@ function AdminInventory() {
               <tr key={item.id} className={item.lowStock ? 'low-stock' : ''}>
                 <td>{item.name}</td>
                 <td>{item.category}</td>
-                <td>{item.currentStock}</td>
+                <td>
+                  {editingItem === item.id ? (
+                    <input
+                      type="number"
+                      value={newStock}
+                      onChange={(e) => setNewStock(e.target.value)}
+                      min="0"
+                      style={{ width: '80px' }}
+                    />
+                  ) : (
+                    item.currentStock
+                  )}
+                </td>
                 <td>
                   <span className={`status ${item.lowStock ? 'warning' : 'good'}`}>
                     {item.lowStock ? 'Low Stock' : 'In Stock'}
@@ -92,8 +134,17 @@ function AdminInventory() {
                 </td>
                 <td>{new Date(item.lastUpdated).toLocaleDateString()}</td>
                 <td>
-                  <button className='btn-restock'>Restock</button>
-                  <button className='btn-edit'>Edit</button>
+                  {editingItem === item.id ? (
+                    <>
+                      <button className='btn-save' onClick={() => handleUpdateStock(item.id)}>Save</button>
+                      <button className='btn-cancel' onClick={handleCancelEdit}>Cancel</button>
+                    </>
+                  ) : (
+                    <>
+                      <button className='btn-restock' onClick={() => handleRestock(item)}>Restock</button>
+                      <button className='btn-edit' onClick={() => handleEditProduct(item.id)}>Edit</button>
+                    </>
+                  )}
                 </td>
               </tr>
             ))}

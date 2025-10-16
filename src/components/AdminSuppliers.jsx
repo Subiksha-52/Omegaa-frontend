@@ -23,9 +23,7 @@ const AdminSuppliers = () => {
 
   const fetchSuppliers = async () => {
     try {
-      const adminToken = localStorage.getItem('adminToken');
-      const headers = adminToken ? { Authorization: `Bearer ${adminToken}` } : {};
-      const response = await api.get('/api/suppliers', { headers });
+      const response = await api.get('/api/suppliers');
       const payload = response.data;
       if (Array.isArray(payload)) setSuppliers(payload);
       else if (payload && Array.isArray(payload.suppliers)) setSuppliers(payload.suppliers);
