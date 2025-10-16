@@ -26,13 +26,18 @@ const ProductList = () => {
 
   // Fetch categories
   useEffect(() => {
-    axios.get('/api/categories').then(res => setCategories(res.data));
+    axios.get(`${process.env.REACT_APP_API_URL}/api/categories`)
+      .then(res => setCategories(Array.isArray(res.data) ? res.data : []))
+      .catch(err => {
+        console.error('Error fetching categories:', err);
+        setCategories([]);
+      });
   }, []);
 
   // Fetch products
   const fetchProducts = (page = currentPage) => {
     setLoading(true);
-    let url = "/api/products";
+    let url = `${process.env.REACT_APP_API_URL}/api/products`;
     const params = [];
     if (selectedCategory !== "all") params.push(`category=${encodeURIComponent(selectedCategory)}`);
     if (search.trim()) params.push(`search=${encodeURIComponent(search.trim())}`);
@@ -56,6 +61,8 @@ const ProductList = () => {
       })
       .catch(err => {
         console.error('Error fetching products:', err);
+        setProducts([]);
+        setPagination({});
         setLoading(false);
       });
   };
