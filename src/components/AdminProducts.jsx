@@ -247,7 +247,7 @@ const AdminProducts = () => {
         {products.map(product => (
           <div key={product._id} className="product-card">
             <img
-              src={`${process.env.REACT_APP_API_URL}${product.image}`}
+              src={`http://localhost:5000${product.image}`}
               alt={product.name}
               className="product-image"
               onError={(e) => { e.target.src = '/placeholder.png'; }}

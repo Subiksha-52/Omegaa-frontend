@@ -9,7 +9,7 @@ import AdminCustomers from '../components/AdminCustomers';
 import AdminInventory from '../components/AdminInventory';
 import AdminReports from '../components/AdminReports';
 import AdminSettings from '../components/AdminSettings';
-import AdminSuppliers from '../components/AdminSuppliers';
+
 import "../components/AdminDashboard.css";
 
 const AdminDashboard = () => {
@@ -49,8 +49,7 @@ const AdminDashboard = () => {
         return <AdminReports />;
       case 'settings':
         return <AdminSettings />;
-      case 'suppliers':
-        return <AdminSuppliers />;
+
       default:
         return <AdminHome />;
     }

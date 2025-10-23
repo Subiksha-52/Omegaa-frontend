@@ -1,8 +1,9 @@
 import React, { useEffect, useState, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaUser, FaShoppingBag, FaCog, FaBox, FaMoneyBillWave, FaChartLine, FaBell, FaShoppingCart, FaStar, FaHistory, FaTrophy, FaShieldAlt } from "react-icons/fa";
+import { FaUser, FaShoppingBag, FaBox, FaMoneyBillWave, FaChartLine, FaShoppingCart, FaStar, FaHistory, FaTrophy, FaShieldAlt } from "react-icons/fa";
 import api from "../api";
 import { AuthContext } from '../contexts/AuthContext';
+import OrderStatusManager from "../components/OrderStatusManager";
 import "./FlipkartDashboard.css";
 import { useNotification } from "../contexts/NotificationContext";
 
@@ -69,6 +70,14 @@ const FlipkartDashboard = () => {
     order.status && !['delivered', 'cancelled'].includes(order.status.toLowerCase())
   ).length;
   const averageOrderValue = totalOrders > 0 ? totalSpend / totalOrders : 0;
+
+  const handleOrderStatusUpdate = (updatedOrder) => {
+    setOrders(prevOrders => 
+      prevOrders.map(order => 
+        order._id === updatedOrder._id ? updatedOrder : order
+      )
+    );
+  };
 
   if (loading) {
     return (
@@ -144,13 +153,6 @@ const FlipkartDashboard = () => {
             >
               <FaShoppingBag />
               <span>Orders</span>
-            </button>
-            <button
-              className={`nav-item ${activeTab === "settings" ? "active" : ""}`}
-              onClick={() => setActiveTab("settings")}
-            >
-              <FaCog />
-              <span>Settings</span>
             </button>
           </div>
         </div>
@@ -289,6 +291,16 @@ const FlipkartDashboard = () => {
                           <button className="btn btn-outline" onClick={() => navigate('/user-orders')}>View Details</button>
                           <button className="btn btn-primary" onClick={() => navigate(`/track-order?orderId=${order._id}`)}>Track Order</button>
                         </div>
+                        
+                        {/* Order Status Manager for Admin */}
+                        {user?.role === 'admin' && (
+                          <div className="admin-order-controls">
+                            <OrderStatusManager 
+                              order={order} 
+                              onStatusUpdate={handleOrderStatusUpdate}
+                            />
+                          </div>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -306,41 +318,7 @@ const FlipkartDashboard = () => {
             </div>
           )}
 
-          {/* Settings Tab */}
-          {activeTab === "settings" && (
-            <div className="orders-section">
-              <div className="section-header">
-                <h2>
-                  <FaCog style={{ marginRight: '0.5rem' }} />
-                  Account Settings
-                </h2>
-              </div>
-              <div className="orders-grid">
-                <div className="order-card">
-                  <h4>Personal Information</h4>
-                  <p>Update your name, email, and phone number</p>
-                  <Link to="/profile-settings" className="btn btn-outline">
-                    Edit Profile
-                  </Link>
-                </div>
-                <div className="order-card">
-                  <h4>Security</h4>
-                  <p>Change your password and security settings</p>
-                  <button className="btn btn-outline">Security Settings</button>
-                </div>
-                <div className="order-card">
-                  <h4>Notifications</h4>
-                  <p>Manage your email and push notifications</p>
-                  <button className="btn btn-outline">Notification Settings</button>
-                </div>
-                <div className="order-card">
-                  <h4>Payment Methods</h4>
-                  <p>Add or update your payment information</p>
-                  <button className="btn btn-outline">Payment Settings</button>
-                </div>
-              </div>
-            </div>
-          )}
+
         </div>
       </div>
     </div>

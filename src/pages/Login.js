@@ -25,7 +25,7 @@ const Login = () => {
     setNotVerified(false);
 
     try {
-      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/auth/login`, {
+      const res = await fetch(`http://localhost:5000/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form)
@@ -54,10 +54,7 @@ const Login = () => {
     }
   };
 
-  const handleGoogleLogin = () => {
-  // Redirect to Google authentication
-  window.open(`${process.env.REACT_APP_API_URL}/api/auth/google`, '_self');
-  };
+
 
   const handleResendVerification = () => {
     // Navigate to register or show resend option
@@ -114,10 +111,7 @@ const Login = () => {
             {loading ? 'Signing in...' : 'Sign In'}
           </button>
 
-          <button type="button" className="google-btn" onClick={handleGoogleLogin}>
-            <FaGoogle style={{ marginRight: '0.5rem' }} />
-            Continue with Google
-          </button>
+
         </form>
 
         {locked && (
@@ -153,17 +147,7 @@ const Login = () => {
           </a>
         </div>
 
-        <div className="social-login">
-          <div className="social-divider">
-            <span>Or continue with</span>
-          </div>
-          <div className="social-buttons">
-            <button type="button" className="social-btn" onClick={handleGoogleLogin}>
-              <FaGoogle style={{ marginRight: '0.5rem' }} />
-              Google
-            </button>
-          </div>
-        </div>
+
       </div>
     </div>
   );

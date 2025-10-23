@@ -86,7 +86,6 @@ const NavBar = ({ user }) => {
           onClick={handleNavLinkClick}
         >
           <FaHome className="nav-link-icon" />
-          <span>Home</span>
         </NavLink>
 
         <NavLink

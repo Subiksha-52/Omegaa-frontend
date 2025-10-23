@@ -41,19 +41,21 @@ export default function OrderTracking() {
       }
 
       const response = await api.get(`/api/orders/${orderId}/tracking`);
-
-      if (response.ok) {
-        const data = await response.json();
-        setOrder(data);
-      } else if (response.status === 404) {
-        setError('Order not found. Please check your order ID.');
-      } else if (response.status === 403) {
-        setError('You do not have permission to view this order.');
-      } else {
-        setError('Failed to fetch order details. Please try again.');
-      }
+      // axios returns the data on success
+      setOrder(response.data);
     } catch (err) {
-      setError('Network error. Please check your connection and try again.');
+      // axios throws for non-2xx responses — inspect err.response when available
+      if (err?.response) {
+        if (err.response.status === 404) {
+          setError('Order not found. Please check your order ID.');
+        } else if (err.response.status === 403) {
+          setError('You do not have permission to view this order.');
+        } else {
+          setError('Failed to fetch order details. Please try again.');
+        }
+      } else {
+        setError('Network error. Please check your connection and try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -89,19 +91,19 @@ export default function OrderTracking() {
         return;
       }
       const response = await api.get(`/api/orders/${orderId}/tracking`);
-
-      if (response.ok) {
-        const data = await response.json();
-        setOrder(data);
-      } else if (response.status === 404) {
-        setError('Order not found. Please check your order ID.');
-      } else if (response.status === 403) {
-        setError('You do not have permission to view this order.');
-      } else {
-        setError('Failed to fetch order details. Please try again.');
-      }
+      setOrder(response.data);
     } catch (err) {
-      setError('Network error. Please check your connection and try again.');
+      if (err?.response) {
+        if (err.response.status === 404) {
+          setError('Order not found. Please check your order ID.');
+        } else if (err.response.status === 403) {
+          setError('You do not have permission to view this order.');
+        } else {
+          setError('Failed to fetch order details. Please try again.');
+        }
+      } else {
+        setError('Network error. Please check your connection and try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -252,7 +254,7 @@ export default function OrderTracking() {
                   <div className="item-details">
                     <h4>{item.product?.name || 'Product'}</h4>
                     <p>Quantity: {item.quantity}</p>
-                    <p className="item-price">${(item.price * item.quantity).toFixed(2)}</p>
+                    <p className="item-price">₹{(item.price * item.quantity).toLocaleString('en-IN', {minimumFractionDigits:2, maximumFractionDigits:2})}</p>
                   </div>
                 </div>
               ))}

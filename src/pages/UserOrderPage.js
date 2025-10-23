@@ -13,6 +13,32 @@ const UserOrderPage = () => {
 
   const { token, user: authUser, isLoggedIn } = useContext(AuthContext);
 
+  const handleCancelOrder = async (orderId) => {
+    if (!window.confirm('Are you sure you want to cancel this order?')) {
+      return;
+    }
+
+    try {
+      const response = await api.post(`/api/orders/${orderId}/cancel`, {
+        reason: 'Customer requested cancellation'
+      });
+
+      // Update the order status in the local state
+      setOrders(prevOrders =>
+        prevOrders.map(order =>
+          order._id === orderId
+            ? { ...order, status: 'cancelled', cancellation: response.data.order.cancellation }
+            : order
+        )
+      );
+
+      alert('Order cancelled successfully');
+    } catch (err) {
+      console.error('Error cancelling order:', err);
+      alert('Failed to cancel order. Please try again.');
+    }
+  };
+
   useEffect(() => {
     const fetchOrders = async () => {
       try {
@@ -170,7 +196,11 @@ const UserOrderPage = () => {
                 {order.shipping && (
                   <div className="shipping-info">
                     <h4>Shipping:</h4>
-                    <p>{order.shipping}</p>
+                    <p><strong>Method:</strong> {order.shipping.method || 'N/A'}</p>
+                    <p><strong>Carrier:</strong> {order.shipping.carrier || 'N/A'}</p>
+                    <p><strong>Tracking Number:</strong> {order.shipping.trackingNumber || 'N/A'}</p>
+                    <p><strong>Estimated Delivery:</strong> {order.shipping.estimatedDelivery ? new Date(order.shipping.estimatedDelivery).toLocaleDateString() : 'N/A'}</p>
+                    <p><strong>Shipping Cost:</strong> ₹{Number(order.shipping.shippingCost || 0).toLocaleString()}</p>
                   </div>
                 )}
 
@@ -195,7 +225,12 @@ const UserOrderPage = () => {
                   <button className="btn btn-primary">Write Review</button>
                 )}
                 {order.status?.toLowerCase() === 'pending' && (
-                  <button className="btn btn-danger">Cancel Order</button>
+                  <button
+                    className="btn btn-danger"
+                    onClick={() => handleCancelOrder(order._id)}
+                  >
+                    Cancel Order
+                  </button>
                 )}
               </div>
             </div>

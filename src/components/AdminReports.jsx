@@ -20,15 +20,17 @@ function AdminReports() {
       const adminToken = localStorage.getItem('adminToken');
       const headers = adminToken ? { Authorization: `Bearer ${adminToken}` } : {};
 
-      // uses api instance which has Authorization header from AuthContext
-      const salesResponse = await api.get('/api/orders/stats', { headers });
-      const usersResponse = await api.get('/api/users/stats', { headers });
-      const productsResponse = await api.get('/api/products', { headers });
+      // Fetch data from different endpoints
+      const [salesResponse, usersResponse, productsResponse] = await Promise.all([
+        api.get('/api/orders/stats', { headers }).catch(err => ({ data: { totalOrders: 0, totalRevenue: 0, monthlyRevenue: [], averageOrderValue: 0 } })),
+        api.get('/api/users/stats', { headers }).catch(err => ({ data: { totalUsers: 0, verifiedUsers: 0, newUsersToday: 0 } })),
+        api.get('/api/products', { headers }).catch(err => ({ data: { products: [] } }))
+      ]);
 
       setReports({
         sales: salesResponse.data,
         users: usersResponse.data,
-        products: productsResponse.data.length
+        products: Array.isArray(productsResponse.data) ? productsResponse.data.length : (productsResponse.data.products?.length || 0)
       });
     } catch (err) {
       console.error('Error fetching reports:', err);
@@ -109,7 +111,7 @@ function AdminReports() {
         <div className='report-section'>
           <h5>Monthly Sales: ₹{reports.sales?.monthlyRevenue?.reduce((sum, month) => sum + month.monthlyRevenue, 0) || 0}</h5>
           <h5>Average Order Value: ₹{reports.sales?.averageOrderValue?.toFixed(2) || 0}</h5>
-          <h5>New Customers This Month: {reports.users?.newUsersThisMonth || 0}</h5>
+          <h5>New Customers Today: {reports.users?.newUsersToday || 0}</h5>
         </div>
       </div>
     </main>

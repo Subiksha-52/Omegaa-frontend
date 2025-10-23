@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import NavBar from './components/NavBar';
+import ModernNavBar from './components/ModernNavBar';
 import Home from './pages/Home';
 import Register from './pages/Register';
 import Login from './pages/Login';
@@ -33,7 +33,7 @@ const App = () => (
     <NotificationProvider>
       <AuthProvider>
         <CartProvider>
-          <NavBar />
+          <ModernNavBar />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/register" element={<Register />} />

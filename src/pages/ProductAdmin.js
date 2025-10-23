@@ -79,7 +79,7 @@ const ProductAdmin = () => {
       <ul>
         {products.map(p => (
           <li key={p._id}>
-            <img src={`${process.env.REACT_APP_API_URL}${p.image}`} alt={p.name} width={50} />
+            <img src={`http://localhost:5000${p.image}`} alt={p.name} width={50} />
             {p.name} (Qty: {p.qty}) - ${p.price}
             <button onClick={() => handleEdit(p)}>Edit</button>
             <button onClick={() => handleDelete(p._id)}>Delete</button>

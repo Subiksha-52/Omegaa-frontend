@@ -144,21 +144,31 @@ export default function Checkout() {
 
               if (verifyRes.data.success) {
                 // 4. On verification success, save order in DB
-                const orderData = {
-                  address: user,
-                  shipping: "standard",
-                  discount: 0,
-                  payment: "gpay",
-                  upiId,
-                  items: checkoutData.items.map(item => ({
-                    product: item.product._id,
-                    quantity: item.quantity
-                  })),
-                  total: checkoutData.totalAmount,
-                  razorpay_payment_id: response.razorpay_payment_id,
-                  razorpay_order_id: response.razorpay_order_id,
-                  razorpay_signature: response.razorpay_signature
-                };
+        const orderData = {
+          address: {
+            name: user.name,
+            line1: user.address,
+            city: "",
+            state: "",
+            postalCode: "",
+            country: "India"
+          },
+          shipping: {
+            method: "standard"
+          },
+          discount: 0,
+          paymentMethod: "gpay",
+          upiId,
+          items: checkoutData.items.map(item => ({
+            product: item.product._id,
+            quantity: item.quantity
+          })),
+          total: checkoutData.totalAmount,
+          razorpay_payment_id: response.razorpay_payment_id,
+          razorpay_order_id: response.razorpay_order_id,
+          razorpay_signature: response.razorpay_signature,
+          paymentStatus: 'paid'
+        };
                 const saveRes = await api.post('/api/orders', orderData);
                 setLoading(false);
                 navigate("/order-success", { state: { order: saveRes.data } });
@@ -168,7 +178,7 @@ export default function Checkout() {
               }
             } catch (err) {
               setLoading(false);
-              setError("Order could not be placed. Please try again.");
+              setError(err.response?.data?.error || "Order could not be placed. Please try again.");
             }
           },
           prefill: {
@@ -203,10 +213,19 @@ export default function Checkout() {
     // For Cash on Delivery
     try {
       const orderData = {
-        address: user,
-        shipping: "standard",
+        address: {
+          name: user.name,
+          line1: user.address,
+          city: "",
+          state: "",
+          postalCode: "",
+          country: "India"
+        },
+        shipping: {
+          method: "standard"
+        },
         discount: 0,
-        payment: paymentMethod,
+        paymentMethod: paymentMethod,
         items: checkoutData.items.map(item => ({
           product: item.product._id,
           quantity: item.quantity
@@ -221,10 +240,10 @@ export default function Checkout() {
       const response = await api.post('/api/orders', orderData);
       setLoading(false);
       navigate("/order-success", { state: { order: response.data } });
-    } catch (err) {
-      setLoading(false);
-      setError("Order could not be placed. Please try again.");
-    }
+            } catch (err) {
+              setLoading(false);
+              setError(err.response?.data?.error || "Order could not be placed. Please try again.");
+            }
   };
 
   const calculateSubtotal = () => {
@@ -258,7 +277,7 @@ export default function Checkout() {
               <div key={item.product._id} className="order-item">
                 <div className="item-image">
                   <img
-                    src={`${process.env.REACT_APP_API_URL}${item.product.image}`}
+                    src={`http://localhost:5000${item.product.image}`}
                     alt={item.product.name}
                   />
                 </div>

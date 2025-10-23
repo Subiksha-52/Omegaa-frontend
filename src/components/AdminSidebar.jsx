@@ -46,11 +46,7 @@ function AdminSidebar({openSidebarToggle, OpenSidebar, onNavigate, currentView})
                     <BsListCheck className='icon'/> Inventory
                 </button>
             </li>
-            <li className={`sidebar-list-item ${isActive('suppliers')}`}>
-                <button className="sidebar-link-button" onClick={() => handleNavigation('suppliers')}>
-                    <BsTruck className='icon'/> Suppliers
-                </button>
-            </li>
+
             <li className={`sidebar-list-item ${isActive('reports')}`}>
                 <button className="sidebar-link-button" onClick={() => handleNavigation('reports')}>
                     <BsMenuButtonWideFill className='icon'/> Reports

@@ -16,7 +16,7 @@ const CartSidebar = ({ user, onClose, isOpen }) => {
       if (isLoggedIn && token) {
         setLoading(true);
         try {
-          const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/cart`, {
+          const response = await axios.get(`http://localhost:5000/api/cart`, {
             headers: { Authorization: `Bearer ${token}` }
           });
           setCartItems(response.data.items);
@@ -41,7 +41,7 @@ const CartSidebar = ({ user, onClose, isOpen }) => {
     if (newQuantity < 1) return;
 
     try {
-      await axios.put(`${process.env.REACT_APP_API_URL}/api/cart/update`, {
+      await axios.put(`http://localhost:5000/api/cart/update`, {
         productId,
         quantity: newQuantity
       }, {
@@ -73,7 +73,7 @@ const CartSidebar = ({ user, onClose, isOpen }) => {
 
   const removeItem = async (productId) => {
     try {
-      await axios.delete(`${process.env.REACT_APP_API_URL}/api/cart/remove/${productId}`, {
+      await axios.delete(`http://localhost:5000/api/cart/remove/${productId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 

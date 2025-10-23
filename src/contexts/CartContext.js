@@ -4,6 +4,8 @@ import { AuthContext } from './AuthContext';
 
 const CartContext = createContext();
 
+export { CartContext };
+
 export const useCart = () => {
   const context = useContext(CartContext);
   if (!context) {
